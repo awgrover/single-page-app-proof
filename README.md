@@ -29,6 +29,23 @@ it stores its data in local-web-storage (indexedDB),
 but that storage is associated with the directory where the .html is.
 So, if you put the .html in a different directory, it can't see the earlier data.
 
+# Goals
+
+It should be able to be a full app, like a spreadsheet.
+
+It should be easily installable.
+
+It should bootstrap itself, acquiring its dependencies and setting itself up.
+
+It should work offline first.
+
+The apps should be able to collaborate with other users.
+
+The user should be able to control exposure of their data.
+
+More specifically, I wanted it to live in a single-file, and be runnable in the browser by just opening the .html. Using pouchdb gives me an interesting storage space, and db(s) for the app. It also has a sync feature for collaboration (it has worked over webrtc). The same-origin policy of "file:" should allow multiple apps (the directory is the origin, so copy the .html to another directory and it is distinct).
+
+
 # Development
 
 Setup things with more debuggability, downloads and links the js, etc.:
