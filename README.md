@@ -6,7 +6,7 @@ Using pouchdb so it can sync/share/be-distributed.
 
 A web-brower,
 that can open a html file on your disk/storage,
-that has "indexdb" (every recent browser as of 2015.1.1),
+that has "indexedDB" (every recent browser as of 2015.1.1),
 that has javascript and local-web-storage enabled for "file:///"
 
 # Installation
@@ -16,14 +16,16 @@ that has javascript and local-web-storage enabled for "file:///"
 ### If you don't have access to make:
 
 * download https://cdn.jsdelivr.net/pouchdb/5.3.0/pouchdb.min.js
-* rename it to pouchdb-5.3.0.js
+* rename (or link) it to pouchdb-5.3.js
+* download jquery 2.2.x from http://jquery.com/download/
+* rename (or link) it to jquery-2.2.min.js
 
 # Usage
 
 Open proof.html in a browser. Enable javascript and local-web-storage.
 
 The .html is the "app",
-it stores its data in local-web-storage (indexdb),
+it stores its data in local-web-storage (indexedDB),
 but that storage is associated with the directory where the .html is.
 So, if you put the .html in a different directory, it can't see the earlier data.
 

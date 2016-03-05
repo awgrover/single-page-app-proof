@@ -2,9 +2,13 @@
 app := proof
 
 # override to 'development' for more debug'ability
+ifndef CONTEXT
 CONTEXT := production
+endif
 
-pouchvers := 5.3.0
+pouchmainvers := 5.3
+pouchrelvers := 0
+pouchvers := $(pouchmainvers).$(pouchrelvers)
 
 
 ifeq ($(CONTEXT), production)
@@ -14,9 +18,9 @@ jssize := max
 endif
 
 .PHONY : all
-all : pouchdb-$(pouchvers).$(jssize).js pouchdb-5.3.0.js
+all : pouchdb-$(pouchvers).$(jssize).js pouchdb-$(pouchmainvers).js jquery-2.2.min.js
 
-$(app).zip : all build/$(app)/pouchdb-$(pouchvers).js build/$(app)/$(app).html build/$(app)/app.js
+$(app).zip : all build/$(app)/clean build/$(app)/pouchdb-$(pouchmainvers).js build/$(app)/$(app).html build/$(app)/app.js
 	cd build &&\
 	zip ../$(app).zip $(app)/* 
 
@@ -24,9 +28,14 @@ $(app).zip : all build/$(app)/pouchdb-$(pouchvers).js build/$(app)/$(app).html b
 pouchdb-version :
 	@ echo $(pouchvers)
 
+.PHONY : debug
+debug :
+	@ echo CONTEXT '$(CONTEXT)'
+	@ echo jssize '$(jssize)'
+
 # Force relink
-.PHONY : pouchdb-$(pouchvers).js
-pouchdb-$(pouchvers).js : 
+.PHONY : pouchdb-$(pouchmainvers).js
+pouchdb-$(pouchmainvers).js : 
 	ln -f -s pouchdb-$(pouchvers).$(jssize).js $@
 
 pouchdb-$(pouchvers).min.js : 
@@ -35,6 +44,15 @@ pouchdb-$(pouchvers).min.js :
 pouchdb-$(pouchvers).max.js : 
 	wget -O $@ https://cdn.jsdelivr.net/pouchdb/$(pouchvers)/pouchdb.js
 	# wget -O $@ https://github.com/pouchdb/pouchdb/releases/download/$(pouchvers)/pouchdb-$(pouchvers).js
+
+jquery-2.2.min.js : 
+	wget http://code.jquery.com/jquery-2.2.1.min.js && \
+	ln -s jquery-2.2.1.min.js jquery-2.2.min.js
+
+.PHONY : build/$(app)/clean
+build/$(app)/clean :
+	rm -rf build/$(app)
+	mkdir -p build/$(app)
 
 build/$(app) :
 	mkdir -p $@
@@ -45,5 +63,5 @@ build/$(app)/$(app).html : $(app).html build/$(app)
 build/$(app)/app.js : app.js build/$(app)
 	cp $< $@
 
-build/$(app)/pouchdb-$(pouchvers).js : pouchdb-$(pouchvers).min.js
+build/$(app)/pouchdb-$(pouchmainvers).js : pouchdb-$(pouchvers).min.js
 	cp $< $@
