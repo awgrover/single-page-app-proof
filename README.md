@@ -22,7 +22,7 @@ that has javascript and local-web-storage enabled for "file:///"
 
 # Usage
 
-Open proof.html in a browser. Enable javascript and local-web-storage.
+Open proof.html in a browser. Enable javascript, local-web-storage, and cookies for the file:///... location.
 
 The .html is the "app",
 it stores its data in local-web-storage (indexedDB),

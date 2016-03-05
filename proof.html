@@ -4,17 +4,43 @@
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
         <title>Single-page Proof of concept</title>
         
+        <!-- everything is local, no server -->
         <script src="pouchdb-5.3.js"></script>
         <script src="jquery-2.2.min.js"></script>
         <script src="app.js"></script>
     </head>
 
     <body>
-        <h1>Start</h1>
+        <h3>Start "page"</h3>
 
         <table>
-            <tr>Location:<td><td id="location"></td></tr>
-        <table>
+            <tr><td>Location:</td><td id="location"></td></tr>
+            <tr><td>app dbname:</td><td id="dbname"></td></tr>
+            <tr><td>pouchdb handle:</td><td id="pouchH"></td></tr>
+            <tr><td>locations in db:</td><td id="extantorigins"></td></tr>
+            <tr><td>Whack the db:</td><td> <input type="button" value="clean" id="clean"></td></tr>
+            <tr><td>like going to another page:<br />
+                To get back, reload the page.<br />
+                See the html edit area below.
+                </td><td><a id="page2link" href="page2.html">"page 2"</a></td></tr>
+        </table>
+
+        <h4>Rows</h4>
+        <div>The <b>FIRST</b> row is the new row, and despite possible appearance, is empty.</div>
+        <div>Edit a box, hit return. It's added/updated to the db.</div>
+        <div>The db persists across browser restarts, using no server.</db>
+        <div id="rows_form" action="#"> <!-- attach submit handler -->
+            <table id="rows_table">
+                <!-- the js will populate the extant rows for us -->
+                <!-- and empty row at the end always -->
+                <tr><td><input value="" name=""></td></tr>
+            </table>
+        </div>
+
+        <div id="page_editor">
+            <div>HTML for page2. Saved in the db. Replaces the inside of &lt;body&gt;:</div>
+            <textarea style="width : 100%" rows="20" name="" id=""></textarea>
+        </div>
     </body>
 </html>
 
