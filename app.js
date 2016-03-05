@@ -160,6 +160,8 @@ function goto_page() { // always "page2" for now
 
       // FIXME: fetched all but we only expect 1
       // will do amusing things when you start sync'ing
+
+      // FIXME: we should be using attachments for the html, I think.
       var html = result.rows[0].doc.value;
       console.log("html",html);
       $('body').html(html);
