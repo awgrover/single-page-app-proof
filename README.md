@@ -2,6 +2,8 @@ Proof of concept single-page app, as a web-page on your machine.
 
 Using pouchdb so it can sync/share/be-distributed.
 
+Just open the .html file in your browser.
+
 # Requirements
 
 A web-brower,
