@@ -1,0 +1,4 @@
+# the min/max and link
+build/
+pouchdb-*.js
+*.zip
