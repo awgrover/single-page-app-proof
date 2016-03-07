@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/pouchdb/dist/pouchdb.js"></script>
+    <script type="text/javascript" src="bower_components/pouchdb/dist/pouchdb.localstorage.js"></script>
+    <script type="text/javascript" src="bower_components/angular-pouchdb/angular-pouchdb.js"></script>
+    <script type="text/javascript" src="node_modules/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.js"></script>
+    <script type="text/javascript" src="controllers/main.ctrl.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+
+
+  </head>
+  <body ng-app="spa">
+    <script type="text/ng-template"  id="main.html">
+    <!--Had to embed this to get things running locally-->
+      <div>
+        Not doing much yet
+        <div ng-bind-html="doc.content"></div>
+      </div>
+    </script>
+    <div ng-view></div>
+    <a href="#/pouch/derp">new route from DB</a>
+  </body>
+</html>
