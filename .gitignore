@@ -2,3 +2,4 @@
 build/
 pouchdb-*.js
 *.zip
+.couchdb/
