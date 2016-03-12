@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+# Runs couchdb as this user, in this directory
+# --- -d|kill will kill it
+# Ensures a .couchdb dir to hold everything
+# See the .couchdb/local.ini
+use strict; use warnings; no warnings 'uninitialized'; use 5.010; no if ($^V ge v5.18.0), warnings => 'experimental::smartmatch';
+use IO::File;
+
+my $port = 5985;
+
+if (! -e '.couchdb') {
+    system "mkdir .couchdb";
+}
+if (!-e '.couchdb/local.ini') {
+
+    my %config = (
+        '1.5.0' => '
+[httpd]
+port = '.$port.'
+
+[couchdb]
+database_dir = .couchdb
+view_index_dir = .couchdb
+uri_file = .couchdb/couch.uri
+
+[log]
+file = .couchdb/couch.log
+'
+        );
+
+    join('',`couchdb -V | head -n 1`) =~ /(\d+\.\d+\.\d+)$/; # couchdb - Apache CouchDB 1.5.0
+    if (! $1) {
+        say STDERR "Didn't see something parsable from couchdb -V";
+        say join('',`couchdb -V | head -n 1`);
+        exit 1;
+        }
+
+    my $whichconfig = $config{$1};
+    if (!$whichconfig) {
+        say STDERR "Didn't see a version we know, from couchdb -V: ",join " ",sort keys(%config);
+        exit 1;
+        }
+    my $fh= IO::File->new(">.couchdb/local.ini");
+    print $fh $whichconfig;
+    }
+
+if ($ARGV[0] eq '-d' || $ARGV[0] eq 'kill' || $ARGV[0] eq '-kill') {
+    exec qw(couchdb -p .couchdb/couchdb.pid -d);
+    }
+elsif ($ARGV[0] =~ /^(--?)?restart/ ) {
+    system($0, 'kill');
+    exec($0);
+    }
+elsif ($ARGV[0] =~ /^(--?)?cors/ ) {
+    my $host="http://localhost:$port";
+
+    for my $cmd ((
+        qq{curl -X PUT $host/_config/httpd/enable_cors -d '"true"'},
+        qq{curl -X PUT $host/_config/cors/origins -d '"*"'},
+        qq{curl -X PUT $host/_config/cors/credentials -d '"true"'},
+        qq{curl -X PUT $host/_config/cors/methods -d '"GET, PUT, POST, HEAD, DELETE"'},
+        qq{curl -X PUT $host/_config/cors/headers -d '"accept, authorization, content-type, origin, referer, x-csrf-token"'},
+        )) {
+        say $cmd;
+        system($cmd) and exit($?);
+        }
+    }
+else {
+    system qw(grep port .couchdb/local.ini);
+    exec qw(couchdb -p .couchdb/couchdb.pid -b -n -a /etc/couchdb/default.ini -a .couchdb/local.ini -o /dev/null -e .couchdb/couch.log);
+    }

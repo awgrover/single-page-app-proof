@@ -1,5 +1,8 @@
 # the min/max and link
-build/
-pouchdb-*.js
+/build
+/pouchdb-*.js
+/jquery-*.js
 *.zip
-.couchdb/
+/.couchdb
+/couchdb-local
+/README.md.html
