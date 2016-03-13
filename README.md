@@ -77,13 +77,17 @@ Setup things with more debuggability, downloads and links the js, etc.:
 
 % env CONTEXT=development make
 
+Setup for a local/unprivileged couchdb:
+
+% make couchdb-local
+
 Make a distributable .zip:
 
 % make proof.zip
 
 # Todo
 
-* test sync vs a local couchdb
 * test the same-origin: if run from another directory, is that a new webstorage?
+* figure out how to get sync to work with anothe pouchdb (webrtc...)
 * see if webrtc will work, test on LAN and WAN.
 * add filtering as proof of concept: see other people updates, but only allow edit of some of own data.
