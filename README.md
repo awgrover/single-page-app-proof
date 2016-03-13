@@ -31,6 +31,29 @@ it stores its data in local-web-storage (indexedDB),
 but that storage is associated with the directory where the .html is.
 So, if you put the .html in a different directory, it can't see the earlier data.
 
+## Sync'ing with local couchdb instance
+
+The various sync buttons want an url to a couchdb-compliant peer. Couchdb, of course, works. 
+
+### Setup "Local" (unprivileged) couchdb 
+
+You can use a couchdb instance that is local to a directory (i.e. running as an unprivileged user).
+
+#### Manually:
+
+* Install couchdb
+* Create a directory for the db-storage
+* Somehow launch couchdb so that it uses a config that points to that directory (see the config text in lib/couchdb-local)
+
+#### Unix's
+
+* install couchdb, you could use the install instance if you want.
+* but, to make it runnable by an unprivileged user, with the db storage in this directory (good for debugging), and CORS enabled:
+
+    % make couchdb-local
+
+* Check the "futon" interface at http://localhost:5985/_utils
+
 # Goals
 
 It should be able to be a full app, like a spreadsheet.

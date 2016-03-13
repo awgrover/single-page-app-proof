@@ -65,3 +65,10 @@ build/$(app)/app.js : app.js build/$(app)
 
 build/$(app)/pouchdb-$(pouchmainvers).js : pouchdb-$(pouchvers).min.js
 	cp $< $@
+
+# First time setup, use ./couchdb-local hereafter
+couchdb-local :
+	[ -e couchdb-local ] || (ln -s lib/couchdb-local . && chmod ug+x lib/couchdb-local)
+	./couchdb-local
+	@echo to stop, use: ./couchdb-local kill
+	
