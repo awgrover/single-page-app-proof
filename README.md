@@ -11,6 +11,14 @@ that can open a html file on your disk/storage,
 that has "indexedDB" (every recent browser as of 2015.1.1),
 that has javascript and local-web-storage enabled for "file:///"
 
+## Permissions
+
+If things seem dead, look in the "console" (developer tools, etc.) and see if there is some Security related message. In FF, I saw "SecurityError: The operation is insecure.1 pouchdb.js:3488:0 ". That can happen if cookies are disabled, or offline-storage is blocked.
+
+I'm using various cookie/javascript managing add-ons, and Ihave default permisions for a lot of things turned off, so I had to go to extra effort to enable appropriate permissions.
+
+* I had to go to the about:permisions dialog and set "Maintain Offline Storage" to "always" ("ask" didn't work) for the file:///... location.
+
 # Installation
 
 % make
