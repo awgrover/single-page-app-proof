@@ -8,6 +8,7 @@ var data_peer_sync;
 function start_sync(url, db, status_id) {
   // Will create the remote db if it doesn't exist, if the url has permissions
   // FIXME: deal with authentication cases
+  // FIXME: shouldn't sync 'origin', that's local.
   console.log("Start sync of "+db+" with "+url);
   var status_element = $('#'+status_id); // meaningful states
   var status_element_b = $('#'+status_id+"_b"); // sub-state info
@@ -15,7 +16,7 @@ function start_sync(url, db, status_id) {
   // we assume our db-name is the same as the remote's. should be configurable
   // FIXME: we don't defend against doing this twice
   console.log("remote sync: "+url+'/'+db);
-  data_peer_sync = PouchDB.replicate(db, url+'/'+db, {
+  data_peer_sync = PouchDB.sync(db, url+'/'+db, { // bidirectional
     live: true, // keep running
     retry: true
   }).on('change', function (info) {
