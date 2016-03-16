@@ -24,10 +24,10 @@ angular.module("spa").config(function($routeProvider){
         resolve: {
           content: function($route, pouchDB){
             var url = $route.current.params.url;
-            console.log(url);
+            console.log("resolve ",url);
             var db = pouchDB("test");
             return db.get(url).then(function(res){
-              console.log(res.content);
+              console.log("get that url from pouch:",res.content);
               return res.content;
             }).catch(function(err){
               return "Error: " + err.message;
