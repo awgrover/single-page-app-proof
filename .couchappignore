@@ -1,0 +1,17 @@
+[
+    "# .couchappignore is broken: it applies these implicit-head-regex's to every element of every file",
+    "# There is no way to say ./* vs ./some/*, or vice-versa",
+
+    "# editor files:",
+    ".*\\.sw[j-p]$",
+
+    "# all . files:",
+    "\\.",
+
+    "# dev files:",
+    "Makefile$",
+    "README.md$",
+    "^lib$",
+    ".*\\.txt$",
+    "^couchdb-local$"
+]

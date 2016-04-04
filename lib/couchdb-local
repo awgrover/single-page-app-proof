@@ -1,8 +1,12 @@
 #!/usr/bin/env perl
-# Runs couchdb as this user, in this directory
-# --- -d|kill will kill it
+# Runs (and initializes) couchdb as this user, in this directory
+# --- # will init/start
+# --- --cors # will setup for cors
+# --- --couchapp # will setup .couchapprc
+# --- --restart # will restart
+# --- -d|kill # will kill it
 # Ensures a .couchdb dir to hold everything
-# See the .couchdb/local.ini
+# See the .couchapprc & .couchdb/local.ini
 use strict; use warnings; no warnings 'uninitialized'; use 5.010; no if ($^V ge v5.18.0), warnings => 'experimental::smartmatch';
 use IO::File;
 
@@ -11,6 +15,7 @@ my $port = 5985;
 if (! -e '.couchdb') {
     system "mkdir .couchdb";
 }
+
 if (!-e '.couchdb/local.ini') {
 
     my %config = (
@@ -42,7 +47,40 @@ file = .couchdb/couch.log
         }
     my $fh= IO::File->new(">.couchdb/local.ini");
     print $fh $whichconfig;
+    system($0, 'kill'); # need restart
     }
+
+# for the couchapp command
+if ($ARGV[0] eq '--couchapp' && !-e '.couchapprc') {
+  if (! $ENV{'APPNAME'}) {
+    say STDERR "Please provide: ";
+    say STDERR "  env APPNAME=theappname";
+    say STDERR "for the couchdb & app name, for the couchapp command";
+    say STDERR "and run this again";
+    exit 1
+    }
+  my $dbname = $ENV{'APPNAME'};
+
+  my $fh= IO::File->new(">.couchapprc");
+  # it's json, but I don't require a JSON module, simple enough:
+  my $json = << "EOS";
+      { 
+      "env": { 
+        "default": { 
+          "db": "http://127.0.0.1:$port/$dbname" 
+          }
+        }
+      }
+EOS
+  # cleanup spurious indent
+  my ($line1) = split /\n/, $json;
+  my ($spurious) = $line1 =~ /^(\s*)/;
+  $json =~ s/^$spurious//mg;
+  print $fh $json;
+
+  say "Setup .couchapprc for couchapp command, database = $dbname";
+  }
+
 
 if ($ARGV[0] eq '-d' || $ARGV[0] eq 'kill' || $ARGV[0] eq '-kill') {
     exec qw(couchdb -p .couchdb/couchdb.pid -d);
@@ -67,5 +105,7 @@ elsif ($ARGV[0] =~ /^(--?)?cors/ ) {
     }
 else {
     system qw(grep port .couchdb/local.ini);
-    exec qw(couchdb -p .couchdb/couchdb.pid -b -n -a /etc/couchdb/default.ini -a .couchdb/local.ini -o /dev/null -e .couchdb/couch.log);
+    my @cmd = qw(couchdb -p .couchdb/couchdb.pid -b -n -a /etc/couchdb/default.ini -a .couchdb/local.ini -o /dev/null -e .couchdb/couch.log);
+    say join(" ", @cmd);
+    exec @cmd;
     }
