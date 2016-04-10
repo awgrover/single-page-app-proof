@@ -14,24 +14,75 @@
         <h3>Start "page"</h3>
 
         <table border="1">
-            <tr><td>Location:</td><td id="location"></td></tr>
-            <tr><td>app dbname:</td><td id="dbname"></td></tr>
-            <tr><td>pouchdb handle:</td><td id="pouchH"></td></tr>
-            <tr><td>locations in db:</td><td id="extantorigins"></td></tr>
-            <tr><td><input type="button" id="data_peer_button" value="Sync with"> a couchdb-peer:<br>
-                <span id="data_peer_status">=off=</span><br>
-                <span id="data_peer_status_b">=off=</span>
-                </td>
-                <td> url:<input type="text" value="http://localhost:5485" id="data_peer"><br>
-                <input type="button" id="data_peer_stop" value="stop sync"></td></tr>
-            <tr><td>Whack the db:</td><td> <input type="button" value="clean" id="clean"></td></tr>
-            <tr><td>like going to another page:<br />
-                To get back, reload the page.<br />
-                See the html edit area below.
-                </td><td><a id="page2link" href="page2.html">"page 2"</a></td></tr>
+            <tbody id="debug">
+                <!-- Detect problems and display remediation here ('#debug') -->
+                <tr id="debug_js_head">
+                    <td colspan=2" style="color: red">Need to fix this stuff to get this app to run:</td>
+                </tr>
+                <tr id="debug_js">
+                    <td>Javascript</td><td>Javascript is off, turn it on</td>
+                </tr>
+                <script>//<![CDATA[
+                    // inline for immediacy of the above test
+                    var element = document.getElementById("debug_js");
+                    element.parentNode.removeChild(element);
+                //]]></script>
+                <script>//<![CDATA[
+                    if (typeof(app_debug) == 'undefined') {
+                        document.getElementById("debug").insertAdjacentHTML(
+                            'beforeend',
+                            "<tr><td>App's javascript code didn't load</td><td>see the console.</td></tr>"
+                            );
+                        }
+                //]]></script>
+            </tbody>
+
+            <tbody>
+                <tr><th colspan="2">Info</th></tr>
+                <tr><td>Location:</td><td id="location"></td></tr>
+                <tr><td>app dbname:</td><td id="dbname"></td></tr>
+                <tr><td>pouchdb handle:</td><td id="pouchH"></td></tr>
+                <tr><td>locations in db:</td><td id="extantorigins"></td></tr>
+                <tr><td><input type="button" id="data_peer_button" value="Sync with"> a couchdb-peer:<br>
+                    <span id="data_peer_status">=off=</span><br>
+                    <span id="data_peer_status_b">=off=</span>
+                    </td>
+                    <td> url:<input type="text" value="http://localhost:5485" id="data_peer"><br>
+                    <input type="button" id="data_peer_stop" value="stop sync"></td></tr>
+                <tr><td>Whack the db:</td><td> <input type="button" value="clean" id="clean"></td></tr>
+                <tr><td>like going to another page:<br />
+                    To get back, reload the page.<br />
+                    See the html edit area below.
+                    </td><td><a id="page2link" href="page2.html">"page 2"</a></td>
+                </tr>
+            </tbody>
         </table>
 
         <h4>Rows</h4>
+<hr>
+<pre>
+* diagnostic detect, test/detect/remediate:
+    * js
+    * cookie
+    * indexdb
+* get text-area saving/loading
+eat dogfood!
+* move .js stuff to vendor/ & clean that up
+* text-area, save on defocus
+    data: type="outline", tumbler order, text, indent...
+    app:
+* add indent
+* add save on return
+* add save on close
+* use for:
+-> pouchdb version
+-> factor to framework, datatype
+-> add new types (todos), rollups, etc. transforms
+-> add compound doc
+-> start an app = sync template...
+/couchapp[.js] has too much stuff
+</pre>
+<hr>
         <div>The <b>FIRST</b> row is the new row, and despite possible appearance, is empty.</div>
         <div>Edit a box, hit return. It's added/updated to the db.</div>
         <div>The db persists across browser restarts, using no server.</db>
@@ -48,5 +99,11 @@
             <textarea style="width : 100%" rows="20" name="" id=""></textarea>
         </div>
     </body>
+
+    <script>
+        app_debug.permissions_check();
+        app_debug.appjs_check();
+        app_debug.final();
+    </script>
 </html>
 

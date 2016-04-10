@@ -1,5 +1,68 @@
 console.log("js loading");
 
+// Part of the error/remediation code:
+// setup for 1st syntax error detect
+
+
+// Part of the error/remediation code:
+// Goes early so it is avail regardless of jquery/pouchdb/syntax-errors
+app_debug = {
+  permissions_check : function() {
+    // test if cookies are enabled (needed for indexdb access on ff)
+    // insert message
+    if (!navigator.cookieEnabled) {
+        var orig = location.origin;
+        // "file:" will give 'null' origin
+        if (orig=='null' && location.protocol == "file:") {
+            orig = location.pathname
+            }
+        document.getElementById("debug").insertAdjacentHTML(
+            'beforeend', 
+            "<td>Enable cookies for<br>(the directory of:)</td><td>"+orig+"</td></tr>"
+            );
+
+          }
+    else {
+      try {
+        var x = localStorage; // just trigger it
+        }
+      catch (err) {
+        document.getElementById("debug").insertAdjacentHTML(
+            'beforeend', 
+            "<td>'localstorage' is disabled</td><td>FIXME: how-to in FF and IE and chrome</td></tr>"
+            );
+        }
+        
+      if (typeof(PouchDB) == 'undefined') {
+        document.getElementById("debug").insertAdjacentHTML(
+            'beforeend', 
+            "<td>PouchDB isn't defined, something didn't load</td><td>see the javascript console?</td></tr>"
+            );
+        }
+      }
+  },
+  appjs_check : function () {
+    // If we don't get to bottom, this inserts. At the bottom, we remove
+    // PouchDB prevents the rest of this file from loading
+    if (typeof(PouchDB) != 'undefined') {
+      document.getElementById("debug").insertAdjacentHTML(
+        'beforeend',
+        "<tr id='debug_app_js'><td>app.js didn't finish loading, probably had syntax error</td><td>see console</td></tr>"
+        );
+      }
+    },
+  final : function() {
+    // remove the "debug" section if we are good
+    var debug_body = document.getElementById("debug");
+    if ( debug_body.getElementsByTagName("tr").length == 1 ) {
+        debug_body.parentNode.removeChild(debug_body);
+        }
+    }
+};
+// we re-insert
+var element = document.getElementById("debug_app_js");
+if (element) { element.parentNode.removeChild(element);}
+
 // the dbname is the .html's name
 var dbname= location.pathname.split(/[\\/]/).pop().replace(/\.[^.]+$/,'');
 var db = new PouchDB(dbname);
@@ -264,3 +327,11 @@ $(function() {
 
   setup_page2_content();
 });
+
+// Part of the error/remediation code:
+// goes last to indicate that this file loaded
+app_debug.appjs_check = function() {
+  var element = document.getElementById("debug_app_js");
+  if (element) { element.parentNode.removeChild(element); }
+  }
+
