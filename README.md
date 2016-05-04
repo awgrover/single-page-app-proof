@@ -32,12 +32,24 @@ I'm using various cookie/javascript managing add-ons, and Ihave default permisio
 
 # Usage
 
-Open proof.html in a browser. Enable javascript, local-web-storage, and cookies for the file:///... location.
+* Open _attachments/index.html in a browser. 
+* Enable javascript
+* local-web-storage, and cookies for the file:///... location.
 
 The .html is the "app",
 it stores its data in local-web-storage (indexedDB),
 but that storage is associated with the directory where the .html is.
 So, if you put the .html in a different directory, it can't see the earlier data.
+
+You can run it from a couch instance:
+* launch couch (and make default db) the first time with 
+    env APPNAME=$yourdbname ./couchdb-local
+    It will setup the .couchapprc.
+* http://127.0.0.1:5987/$yourdbname/_design/dualmode/index.html
+
+It will use the couchdb instance to store data (not implemented yet).
+
+Remember, there is a couchdb admin tool ("futon") at http://127.0.0.1:5987/_utils/index.html
 
 ## Sync'ing with local couchdb instance
 

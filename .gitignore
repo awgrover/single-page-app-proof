@@ -6,3 +6,4 @@
 /.couchdb
 /couchdb-local
 /README.md.html
+.couchapprc

@@ -1,0 +1,26 @@
+#!/bin/bash
+# deduce the appname
+
+if [ -e .couchapprc ]; then
+    url=`lib/jsonparse env.default.db .couchapprc`
+    if [ "$?" == "3" ]; then
+        # grep away
+        # set -o pipefail
+        url=`grep '"db"' .couchapprc | sed 's/^ *"db" *: *//; s/"//g'`
+        if [ "$url" == "" ]; then
+            echo "Couldn't crudely grep .couchapprc for the db name" > /dev/stderr
+            exit 1
+        fi
+    fi
+    if [ "$url" == "" ]; then
+        echo "Couldn't figure out the db name from .couchapprc for the db name using: lib/jsonparse env.default.db .couchapprc" > /dev/stderr
+        exit 1
+    fi
+    echo "$url" | awk -F/ '{print $(NF)}'
+elif [ "$APPNAME" != "" ]; then
+    $APPNAME
+else
+    echo "Don't know the appname, supply via 'env APPNAME=$something', or setup via 'env APPNAME=$something couchdb-local'" > /dev/stderr
+    exit 1
+fi
+    

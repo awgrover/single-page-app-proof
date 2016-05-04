@@ -1,5 +1,5 @@
-# App name, i.e the single page
-app := proof
+# App name is from the .couchapprc
+app := $(shell lib/appname)
 
 # override to 'development' for more debug'ability
 ifndef CONTEXT
@@ -10,6 +10,7 @@ pouchmainvers := 5.3
 pouchrelvers := 0
 pouchvers := $(pouchmainvers).$(pouchrelvers)
 
+attaches := _attachments/script
 
 ifeq ($(CONTEXT), production)
 jssize := min
@@ -18,7 +19,10 @@ jssize := max
 endif
 
 .PHONY : all
-all : pouchdb-$(pouchvers).$(jssize).js pouchdb-$(pouchmainvers).js jquery-2.2.min.js
+all : lib/pouchdb-$(pouchvers).$(jssize).js $(attaches)/pouchdb-$(pouchmainvers).js $(attaches)/jquery-2.2.min.js
+
+.PHONY : zip
+zip : $(app).zip
 
 $(app).zip : all build/$(app)/clean build/$(app)/pouchdb-$(pouchmainvers).js build/$(app)/$(app).html build/$(app)/app.js
 	cd build &&\
@@ -28,26 +32,30 @@ $(app).zip : all build/$(app)/clean build/$(app)/pouchdb-$(pouchmainvers).js bui
 pouchdb-version :
 	@ echo $(pouchvers)
 
+.PHONY : appname
+appname:
+	@echo $(app)
+
 .PHONY : debug
 debug :
 	@ echo CONTEXT '$(CONTEXT)'
 	@ echo jssize '$(jssize)'
 
 # Force relink
-.PHONY : pouchdb-$(pouchmainvers).js
-pouchdb-$(pouchmainvers).js : 
-	ln -f -s pouchdb-$(pouchvers).$(jssize).js $@
+.PHONY : $(attaches)/pouchdb-$(pouchmainvers).js
+$(attaches)/pouchdb-$(pouchmainvers).js : 
+	ln -f -s ../../lib/pouchdb-$(pouchvers).$(jssize).js $@
 
-pouchdb-$(pouchvers).min.js : 
+lib/pouchdb-$(pouchvers).min.js : 
 	wget -O $@ https://cdn.jsdelivr.net/pouchdb/$(pouchvers)/pouchdb.min.js
 
-pouchdb-$(pouchvers).max.js : 
+lib/pouchdb-$(pouchvers).max.js : 
 	wget -O $@ https://cdn.jsdelivr.net/pouchdb/$(pouchvers)/pouchdb.js
 	# wget -O $@ https://github.com/pouchdb/pouchdb/releases/download/$(pouchvers)/pouchdb-$(pouchvers).js
 
-jquery-2.2.min.js : 
+lib/jquery-2.2.min.js : 
 	wget http://code.jquery.com/jquery-2.2.1.min.js && \
-	ln -s jquery-2.2.1.min.js jquery-2.2.min.js
+	cd lib && ln -s jquery-2.2.1.min.js $@
 
 .PHONY : build/$(app)/clean
 build/$(app)/clean :
@@ -57,13 +65,13 @@ build/$(app)/clean :
 build/$(app) :
 	mkdir -p $@
 
-build/$(app)/$(app).html : $(app).html build/$(app)
+build/$(app)/$(app).html : _attachments/index.html build/$(app)
 	cp $< $@
 
-build/$(app)/app.js : app.js build/$(app)
+build/$(app)/app.js : $(attaches)/app.js build/$(app)
 	cp $< $@
 
-build/$(app)/pouchdb-$(pouchmainvers).js : pouchdb-$(pouchvers).min.js
+build/$(app)/pouchdb-$(pouchmainvers).js : lib/pouchdb-$(pouchvers).min.js
 	cp $< $@
 
 # First time setup, use ./couchdb-local hereafter

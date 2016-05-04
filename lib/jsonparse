@@ -1,0 +1,90 @@
+#!/bin/bash
+# --- jsonpath [jsonfile]
+# Return something from a jsonfile (or json from stdin)
+
+pathexpr="$1"
+if [ "$pathexpr" == "" ]; then
+    echo "Expected a json path expression, saw nothing" > /dev/stderr
+    exit 2
+fi
+
+if [[ -e "$pathexpr" ]]; then
+    echo "Expected a json path expression, saw filename '$pathexpr'" > /dev/stderr
+    exit 2
+fi
+
+jsonfile="$2"
+if [[ ! -e "$jsonfile" ]]; then
+    echo "Expected a json file, but doesn't exist: $jsonfile'" > /dev/stderr
+    exit 2
+fi
+
+# This could go so many ways
+# Every command line js interpreter is different
+if  false && which couchjs >/dev/null; then
+    # I don't know how to read a file in couchjs
+    echo "has couchjs"
+    couchjs lib/jsonparse.js -- "$pathexpr"
+elif which nodejs >/dev/null; then
+    cat > lib/tmp <<'EOS'
+        // --- jsonpath jsonfile
+        // node has: [ 'nodejs', thisscript, argv.. ]
+        fs = require('fs');
+        str = fs.readFileSync(process.argv[3]);
+        // console.log("str\n",str);
+        data = JSON.parse(str);
+
+        //console.log("--",data);
+
+        parts = process.argv[2].split('.');
+
+        parts.forEach(function(k) {
+          will = data[k];
+          if ( will == undefined) {
+            console.error("Undefined:",data,"[",k,"]");
+            process.exit(1);
+            }
+          data = will;
+          });
+
+        console.log(data);
+        process.exit(0);
+EOS
+    nodejs lib/tmp  "$pathexpr" "$jsonfile"
+    rm lib/tmp
+
+elif which perl >/dev/null && perl -mJSON -e '' 2>/dev/null; then
+    # perl script is below
+    exec perl -x $0 "$pathexpr" "$jsonfile"
+
+#nodejs
+else
+    echo "Nothing to parse json with, installing perl w/JSON, or nodejs is most obvious"
+    exit 3
+fi
+exit
+
+#!perl
+    use strict; use warnings; no warnings 'uninitialized'; use 5.010; no if ($^V ge v5.18.0), warnings => 'experimental::smartmatch';
+    use feature "switch";
+    use JSON;
+    my $jsonpath=shift @ARGV;
+    my $data = decode_json(join("",<>));
+    for my $k ( split('\.', $jsonpath) ) {
+        my $will;
+        given (ref($data)) {
+            when ('ARRAY') {
+                $will = $data->[$k];
+                }
+            when ('HASH') {
+                $will = $data->{$k};
+                }
+            otherwise {
+                die "boob: $_";
+                }
+            };
+        $data = $will;
+        }
+    say $data;
+    exit(0);
+__END__
