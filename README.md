@@ -1,6 +1,6 @@
 Proof of concept single-page app, as a web-page on your machine.
 
-Next evolution is at https://github.com/awgrover/bootrappable-offline-first-apps
+Next evolution is at https://github.com/awgrover/tables
 
 Using pouchdb so it can sync/share/be-distributed.
 
