@@ -104,7 +104,14 @@ elsif ($ARGV[0] =~ /^(--?)?cors/ ) {
         }
     }
 else {
-    system qw(grep port .couchdb/local.ini);
+    # Suggest extant dbs, not leading _
+    # system qw(grep port .couchdb/local.ini);
+    my $url = `cat .couchdb/couch.uri`; chomp $url;
+    my @dbs = grep {/^[^_]/} map { s/^\.couchdb\///; $_} glob(".couchdb/*.couch");
+    # http://127.0.0.1:5987/$yourdbname/_design/dualmode/index.html
+    say join("\n\t", map {"$url$_/_design/dualmode/index.html"} @dbs);
+
+    # Start
     my @cmd = qw(couchdb -p .couchdb/couchdb.pid -b -n -a /etc/couchdb/default.ini -a .couchdb/local.ini -o /dev/null -e .couchdb/couch.log);
     say join(" ", @cmd);
     exec @cmd;

@@ -1,5 +1,7 @@
 Proof of concept single-page app, as a web-page on your machine.
 
+Next evolution is at https://github.com/awgrover/bootrappable-offline-first-apps
+
 Using pouchdb so it can sync/share/be-distributed.
 
 Just open the .html file in your browser.
@@ -34,7 +36,7 @@ I'm using various cookie/javascript managing add-ons, and Ihave default permisio
 
 * Open _attachments/index.html in a browser. 
 * Enable javascript
-* local-web-storage, and cookies for the file:///... location.
+* Enable local-web-storage, and cookies for the file:///... location.
 
 The .html is the "app",
 it stores its data in local-web-storage (indexedDB),
@@ -107,7 +109,10 @@ Make a distributable .zip:
 
 # Todo
 
-* test the same-origin: if run from another directory, is that a new webstorage?
+-- works: test the same-origin: if run from another directory, is that a new webstorage?
+
+moving to next evolution of the concept.
+
 * figure out how to get sync to work with anothe pouchdb (webrtc...)
 * see if webrtc will work, test on LAN and WAN.
 * add filtering as proof of concept: see other people updates, but only allow edit of some of own data.

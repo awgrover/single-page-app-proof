@@ -116,7 +116,7 @@ function start_sync(url, db, status_id) {
 
 function catch_pouch_error(err, result) {
   if (!err) {
-    console.log('didit');
+    console.log('didit',result);
   } else {
     console.log("fail: "+err,result);
     alert("fail: "+err,result);
@@ -168,33 +168,52 @@ function show_extant_origins() {
   }
 
 function page2_change(event) {
+  // the textarea
   console.log("submit..",event);
   var rowid = event.target.id;
   console.log("id",rowid);
 
+  var updated = function(result) {
+      console.log(result);
+      var stat = $("#textarea_status");
+      stat.stop(true, true);
+      stat.text("ok");
+      stat.css("background-color","green");
+      stat.show();
+      stat.fadeOut(2000);
+
+      $(event.target).attr("name", result.rev);
+      if (event.target.id == undefined) {
+        event.target.id = result.id;
+        }
+      else if (event.target.id != result.id) {
+        catch_pouch_error("Bad id!", result);
+        }
+    }
+
   // blank name is "new", add it
   if (rowid == '') {
+    console.log("New add");
     db.post(
       {
         type : 'page',
         value : event.target.value
-    }).then(function(result) {
-      console.log(result);
-      event.target.name = result._rev;
-      event.target.id = result.id;
-    }).catch( catch_pouch_error);
+    })
+    .then(updated)
+    .catch( catch_pouch_error);
   }
 
   else {
+    console.log("target",event.target);
+    console.log("Update id",rowid,"rev",event.target.name);
     db.put({
         _id : rowid,
         _rev : event.target.name,
         type : 'page',
         value : event.target.value
-    }).then(function(result) {
-      event.target.name = result._rev;
-      console.log(result);
-    }).catch( catch_pouch_error);
+    })
+    .then(updated)
+    .catch( catch_pouch_error);
   }
 }
 function row_change(event) {
@@ -236,21 +255,21 @@ function setup_page2_content() {
   db.query(
     function(doc,emit) {emit(doc.type);}, // the _id is now the .type
     {
-      key : 'page', // the new stream of docs where _id=='row'
+      key : 'page', 
       include_docs : true
     }).then(function(result) {
       console.log("page",result.rows);
-      var ta = $('#page_editor textarea');
+      var ta =$( $('#page_editor textarea')[0] );
 
       // FIXME: doing "each" but we only expect 1
       // will do amusing things when you start sync'ing
-      $(result.rows).each(function(i,apage) {
-        console.log("show "+i,apage);
+      var apage = result.rows[0];
+        console.log("show ",apage);
         ta.text(apage.doc.value);
-        ta.id = apage.id;
-        ta.name = apage.doc._rev;
-        });
-    ta.change(page2_change);
+        ta.attr("id", apage.id);
+        ta.attr("name", apage.doc._rev);
+
+      ta.change(page2_change);
         
     }).catch(catch_pouch_error);
 
